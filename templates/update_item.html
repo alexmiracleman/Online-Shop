@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <title>Item update</title>
+</head>
+<body>
+<h3 align="center">EDIT ITEM QUANTITY</h3>
+<div class="container">
+    <form>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+
+            <th scope="col">Item Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Time added/updated</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+        <#list items as item>
+        <tr>
+
+            <th scope="row">${item.name}</th>
+            <td>${item.quantity}</td>
+            <td>${item.creationDate}</td>
+        </tr>
+        </#list>
+
+
+      </tbody>
+    </table>
+
+  </form>
+    <div class="container" align="center">
+      <p></p>
+      <form action="/cart/update" method="POST">
+          <strong>
+              <div class="form-group">
+
+                  Select item to update: <select name="name" class="form-control" style="width:95px;height:35px" align="center" required>
+                  <#list items as item>
+                  <option>${item.name}</option>
+              </#list>
+                  </select>
+              </div>
+             <p></p>
+              Edit quantity: <select style="width:55px;height:35px" align="center" name="quantity">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+              </select>
+          </strong>
+          <p></p>
+        <input type="submit" class="btn btn-dark" value="SUBMIT">
+        <p></p>
+        <a href="/cart" class="btn btn-dark">RETURN TO CART</a>
+
+</div>
+
+  <#if errorMessage??>
+  <p></p>
+  <p align="center"><strong>${errorMessage}</strong></p>
+</#if>
+
+    <#if successMessage??>
+    <p></p>
+    <p align="center"><strong>${successMessage}</strong></p>
+</#if>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>
