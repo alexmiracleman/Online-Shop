@@ -4,62 +4,71 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.alex.entity.Item;
+import org.alex.entity.ItemDeptType;
 import org.alex.service.ItemService;
 import org.alex.web.util.PageGenerator;
+import org.alex.service.SecurityService;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AddNewItemServlet extends HttpServlet {
-    private ItemService itemService;
+    private final ItemService itemService;
 
-    public AddNewItemServlet(ItemService itemService) {
+    PageGenerator pageGenerator = PageGenerator.instance();
+    SecurityService securityService;
+
+    public AddNewItemServlet(ItemService itemService, SecurityService securityService) {
         this.itemService = itemService;
+        this.securityService = securityService;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        List<Item> items = itemService.findAll();
-        PageGenerator pageGenerator = PageGenerator.instance();
-        Map<String, Object> parameters = Map.of("items", items);
-        String page = pageGenerator.getPage("add_item.html", parameters);
-        resp.getWriter().write(page);
+
+            List<Item> items = itemService.findAll();
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("itemDeptTypes", ItemDeptType.values());
+            parameters.put("items", items);
+            String page = pageGenerator.getPage("add_item.html", parameters);
+            resp.getWriter().write(page);
+
+
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             Item item = getItemsFromRequest(req);
-
-        itemService.add(item);
-        String successMessage = "THE ITEM HAS BEEN ADDED TO YOUR CART";
-        List<Item> items = itemService.findAll();
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("successMessage", successMessage);
-        parameters.put("items", items);
-        PageGenerator pageGenerator = PageGenerator.instance();
-        String page = pageGenerator.getPage("add_item.html", parameters);
-        resp.getWriter().write(page);
+            itemService.add(item);
+            String successMessage = "THE ITEM HAS BEEN ADDED";
+            List<Item> items = itemService.findAll();
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("itemDeptTypes", ItemDeptType.values());
+            parameters.put("successMessage", successMessage);
+            parameters.put("items", items);
+            String page = pageGenerator.getPage("add_item.html", parameters);
+            resp.getWriter().write(page);
         } catch (Exception e) {
-        List<Item> items = itemService.findAll();
-        String errorMessage1 = "THE SELECTED ITEM IS ALREADY IN YOUR CART.";
-        String errorMessage2 = "IN ORDER TO UPDATE THE QUANTITY, PLEASE USE THE EDIT BUTTON IN THE MAIN MENU";
-        PageGenerator pageGenerator = PageGenerator.instance();
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("errorMessage1", errorMessage1);
-        parameters.put("errorMessage2", errorMessage2);
-        parameters.put("items", items);;
-        String page = pageGenerator.getPage("add_item.html", parameters);
-        resp.getWriter().write(page);
+            List<Item> items = itemService.findAll();
+            String errorMessage = "NOTHING HAVE BEEN ADDED";
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("itemDeptTypes", ItemDeptType.values());
+            parameters.put("errorMessage", errorMessage);
+            parameters.put("items", items);
+            String page = pageGenerator.getPage("add_item.html", parameters);
+            resp.getWriter().write(page);
 
         }
     }
-    private Item getItemsFromRequest(HttpServletRequest request) {
 
+    private Item getItemsFromRequest(HttpServletRequest request) {
+        String department = request.getParameter("department");
         return Item.builder()
                 .name(request.getParameter("name"))
-                .quantity(Integer.parseInt(request.getParameter("quantity")))
+                .price(Integer.parseInt(request.getParameter("price")))
+                .itemDeptType(ItemDeptType.getById(department))
                 .build();
 
     }

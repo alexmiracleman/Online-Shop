@@ -10,6 +10,8 @@ public interface ItemDao {
     List<Item> findAll();
 
     void add(Item item);
+
     void delete(Item item);
+
     void update(Item item);
 }

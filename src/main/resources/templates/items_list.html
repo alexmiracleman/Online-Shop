@@ -12,7 +12,7 @@
     <title>Your bag</title>
 </head>
 <body>
-<h3 align="center">ONLINE GROCERY STORE</h3>
+<h3 align="center">ONLINE STORE MAIN</h3>
 
 <div class="container">
     <form>
@@ -20,8 +20,10 @@
         <thead>
         <tr>
 
+            <th scope="col">Item ID</th>
             <th scope="col">Item Name</th>
-            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
+            <th scope="col">Department</th>
             <th scope="col">Time added/updated</th>
 
         </tr>
@@ -31,8 +33,10 @@
         <#list items as item>
         <tr>
 
-            <th scope="row">${item.name}</th>
-            <td>${item.quantity}</td>
+            <th scope="row">${item.id}</th>
+            <td>${item.name}</td>
+            <td>$${item.price}</td>
+            <td>${item.itemDeptType.getName()}</td>
             <td>${item.creationDate}</td>
         </tr>
         </#list>
@@ -46,15 +50,19 @@
 </div>
     <p></p>
         <div class="container" align="center">
-            <a href="/cart/add" class="btn btn-dark">ADD ITEMS TO YOUR CART</a>
+            <a href="/add" class="btn btn-dark" style="width:137px">ADD ITEMS</a>
 
     <p></p>
 
-        <a href="/cart/update" class="btn btn-dark">EDIT ITEMS IN YOUR CART</a>
+        <a href="/update" class="btn btn-dark" style="width:137px">EDIT ITEMS</a>
 
     <p></p>
-        <a href="/cart/delete" class="btn btn-dark">REMOVE ITEMS FROM YOUR CART</a>
+        <a href="/delete" class="btn btn-dark" style="width:137px">REMOVE ITEMS</a>
 
+</div>
+<p></p>
+<div class="container" align="center">
+    <a href="/logout" class="btn btn-dark" style="width:137px">LOG OUT</a>
 </div>
 
 <!-- Optional JavaScript; choose one of the two! -->

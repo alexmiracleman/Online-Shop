@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 public class Item {
     private int id;
     private String name;
-    private int quantity;
+    private int price;
+    private ItemDeptType itemDeptType;
     private LocalDateTime creationDate;
 }
 

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ItemService {
-    private ItemDao itemDao;
+    private final ItemDao itemDao;
 
     public ItemService(ItemDao itemDao) {
         this.itemDao = itemDao;
@@ -19,14 +19,17 @@ public class ItemService {
         return items;
 
     }
+
     public void add(Item item) {
         LocalDateTime now = LocalDateTime.now();
         item.setCreationDate(now);
         itemDao.add(item);
     }
+
     public void delete(Item item) {
         itemDao.delete(item);
     }
+
     public void update(Item item) {
         LocalDateTime now = LocalDateTime.now();
         item.setCreationDate(now);

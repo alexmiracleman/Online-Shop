@@ -15,7 +15,7 @@ class JdbcItemDaoITest {
         assertFalse(items.isEmpty());
         for (Item item : items) {
             assertNotEquals(0,item.getId());
-            assertNotNull(item.getName());
+            assertNotNull(item.getItemDeptType());
             assertNotNull(item.getPrice());
             assertNotNull(item.getCreationDate());
         }

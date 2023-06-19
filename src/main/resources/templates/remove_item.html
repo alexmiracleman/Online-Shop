@@ -10,15 +10,17 @@
   <title>Item remove</title>
 </head>
 <body>
-<h3 align="center">REMOVE ITEMS FROM YOUR CART</h3>
+<h3 align="center">REMOVE ITEMS</h3>
 <div class="container">
   <form>
     <table class="table table-striped">
       <thead>
       <tr>
 
+        <th scope="col">Item ID</th>
         <th scope="col">Item Name</th>
-        <th scope="col">Quantity</th>
+        <th scope="col">Price</th>
+        <th scope="col">Department</th>
         <th scope="col">Time added/updated</th>
 
       </tr>
@@ -28,8 +30,10 @@
       <#list items as item>
       <tr>
 
-        <th scope="row">${item.name}</th>
-        <td>${item.quantity}</td>
+        <th scope="row">${item.id}</th>
+        <td>${item.name}</td>
+        <td>$${item.price}</td>
+        <td>${item.itemDeptType.getName()}</td>
         <td>${item.creationDate}</td>
       </tr>
       </#list>
@@ -39,23 +43,25 @@
     </table>
 
   </form>
+
   <div class="container" align="center">
     <p></p>
-    <form action="/cart/delete" method="POST">
+    <form action="/delete" method="POST">
       <strong>
         <div class="form-group">
-          Select item to remove:<select name="name" class="form-control" style="width:95px;height:35px" align="center" required>
+          Select item to remove:
+          <select name="name" style="width:95px;height:35px" align="center" required>
           <#list items as item>
-          <option>${item.name}</option>
+          <option value="${item.name}">${item.name}</option>
         </#list>
         </div>
       </strong>
           </select>
 
         <p></p>
-      <input type="submit" class="btn btn-dark" value="SUBMIT">
+      <input type="submit" class="btn btn-dark" style="width:137px" value="SUBMIT">
       <p></p>
-      <a href="/cart" class="btn btn-dark ">RETURN TO CART</a>
+      <a href="/" class="btn btn-dark" style="width:137px">RETURN</a>
   </form>
 </div>
 

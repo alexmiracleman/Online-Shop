@@ -11,22 +11,23 @@ import java.util.List;
 public class JdbcItemDao implements ItemDao {
     private static final ItemRowMapper ITEM_ROW_MAPPER = new ItemRowMapper();
     private static final String FIND_ALL_SQL = """
-            SELECT id, name, quantity, creation_date FROM shop ORDER BY id;
+            SELECT id, name, price, department, creation_date FROM inventory ORDER BY id;
             """;
     private static final String ADD_SQL = """
-            INSERT INTO shop (name, quantity, creation_date) VALUES (?, ?, ?);
+            INSERT INTO inventory (name, price, department, creation_date) VALUES (?, ?, ?, ?);
              """;
     private static final String DELETE_SQL = """
-            DELETE FROM shop WHERE name = ?;
+            DELETE FROM inventory WHERE name = ?;
              """;
     private static final String UPDATE_SQL = """
-            UPDATE shop SET quantity = ?, creation_date = ? WHERE name = ?;
+            UPDATE inventory SET price = ?, creation_date = ? WHERE name = ?;
              """;
+
     @Override
     public List<Item> findAll() {
         try (Connection connection = getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL);
-            ResultSet resultSet = preparedStatement.executeQuery()) {
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             List<Item> items = new ArrayList<>();
             while (resultSet.next()) {
@@ -35,25 +36,28 @@ public class JdbcItemDao implements ItemDao {
             }
             return items;
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
     }
+
     public void add(Item item) {
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(ADD_SQL)) {
             preparedStatement.setString(1, item.getName());
-            preparedStatement.setInt(2, item.getQuantity());
-            preparedStatement.setTimestamp(3, Timestamp.valueOf(item.getCreationDate()));
+            preparedStatement.setInt(2, item.getPrice());
+            preparedStatement.setString(3, item.getItemDeptType().getId());
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(item.getCreationDate()));
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error with item insertion", e);
+            throw new RuntimeException("Error with the item insertion", e);
         }
     }
+
     public void delete(Item item) {
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
@@ -62,24 +66,25 @@ public class JdbcItemDao implements ItemDao {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error with item removal", e);
+            throw new RuntimeException("Error with the item removal", e);
         }
     }
+
     public void update(Item item) {
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setInt(1, item.getQuantity());
+            preparedStatement.setInt(1, item.getPrice());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(item.getCreationDate()));
             preparedStatement.setString(3, item.getName());
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error with item update", e);
+            throw new RuntimeException("Error with the item update", e);
         }
     }
 
     private Connection getConnection() throws SQLException {
-         return DriverManager.getConnection("jdbc:postgresql://localhost:5432/onlineshop", "postgres", "");
+        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/onlinestore", "postgres", "Alex123!");
     }
 }
