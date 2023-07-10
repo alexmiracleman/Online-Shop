@@ -32,7 +32,7 @@
                 <th scope="row">${item.id}</th>
                 <td>${item.name}</td>
                 <td>$${item.price}</td>
-                <td>${item.itemDeptType.getName()}</td>
+                <td>${item.itemDepartmentType.getName()}</td>
                 <td>${item.creationDate}</td>
 
             </tr>
@@ -46,11 +46,11 @@
 
     <div align="center" class="container">
         <p></p>
-        <form action="/add" method="POST">
+        <form action="/items/add" method="POST">
             <strong>Select department:
             <select align="center" name="department" style="width:105px;height:35px">
-                <#list itemDeptTypes as itemDeptType>
-                <option value="${itemDeptType.id}">${itemDeptType.getName()}</option>
+                <#list itemDepartmentTypes as itemDepartmentType>
+                <option value="${itemDepartmentType.id}">${itemDepartmentType.getName()}</option>
             </#list>
             </select>
             <p></p>
@@ -64,7 +64,7 @@
                 <p></p>
                 <input class="btn btn-dark" style="width:137px" type="submit" value="SUBMIT">
                 <p></p>
-                <a class="btn btn-dark" style="width:137px" href="/">RETURN</a>
+                <a href="/items" class="btn btn-dark" style="width:137px" href="/">RETURN</a>
 
     </div>
     </strong>

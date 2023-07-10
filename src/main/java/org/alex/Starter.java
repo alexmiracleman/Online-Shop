@@ -32,25 +32,21 @@ public class Starter {
         ShowAllItemsRequestServlet showAllItemsRequestServlet = new ShowAllItemsRequestServlet(itemService);
         List<String> userTokens = Collections.synchronizedList(new ArrayList<>());
         SecurityService securityService = new SecurityService(userTokens, userService);
-        AddNewItemServlet addNewItemServlet = new AddNewItemServlet(itemService, securityService);
-        DeleteItemServlet deleteItemServlet = new DeleteItemServlet(itemService, securityService);
-        UpdateItemServlet updateItemServlet = new UpdateItemServlet(itemService, securityService);
+        AddNewItemServlet addNewItemServlet = new AddNewItemServlet(itemService);
+        DeleteItemServlet deleteItemServlet = new DeleteItemServlet(itemService);
+        UpdateItemServlet updateItemServlet = new UpdateItemServlet(itemService);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         context.addFilter(new FilterHolder(new SecurityFilter(securityService)), "/*", EnumSet.of(DispatcherType.REQUEST) );
 
-        context.addServlet(new ServletHolder(showAllItemsRequestServlet), "/");
-        context.addServlet(new ServletHolder(addNewItemServlet), "/add");
-        context.addServlet(new ServletHolder(deleteItemServlet), "/delete");
-        context.addServlet(new ServletHolder(updateItemServlet), "/update");
+        context.addServlet(new ServletHolder(showAllItemsRequestServlet), "/items");
+        context.addServlet(new ServletHolder(addNewItemServlet), "/items/add");
+        context.addServlet(new ServletHolder(deleteItemServlet), "/items/delete");
+        context.addServlet(new ServletHolder(updateItemServlet), "/items/update");
         context.addServlet(new ServletHolder(new LoginItemServlet(userTokens, securityService)), "/login");
-        context.addServlet(new ServletHolder(new SignUpItemServlet(userTokens, securityService, userService)), "/register");
+        context.addServlet(new ServletHolder(new SignUpItemServlet(securityService, userService)), "/register");
         context.addServlet(new ServletHolder(new LogoutServlet(securityService)),"/logout" );
-
-
-
-
 
         Server server = new Server(8080);
         server.setHandler(context);

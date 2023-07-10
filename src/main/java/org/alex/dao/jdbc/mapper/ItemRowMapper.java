@@ -1,7 +1,7 @@
 package org.alex.dao.jdbc.mapper;
 
 import org.alex.entity.Item;
-import org.alex.entity.ItemDeptType;
+import org.alex.entity.ItemDepartmentType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,13 +12,13 @@ public class ItemRowMapper {
         int id = resultSet.getInt("id");
         String name = resultSet.getString("name");
         int price = resultSet.getInt("price");
-        String itemDeptId = resultSet.getString("department");
+        String itemDepartmentTypeId = resultSet.getString("department");
         Timestamp creationDate = resultSet.getTimestamp("creation_date");
         Item item = Item.builder().
                 id(id)
                 .name(name)
                 .price(price)
-                .itemDeptType(ItemDeptType.getById(itemDeptId))
+                .itemDepartmentType(ItemDepartmentType.getById(itemDepartmentTypeId))
                 .creationDate(creationDate.toLocalDateTime())
                 .build();
 

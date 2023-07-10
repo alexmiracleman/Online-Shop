@@ -13,13 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class UpdateItemServlet extends HttpServlet {
-    public UpdateItemServlet(ItemService itemService, SecurityService securityService) {
+    public UpdateItemServlet(ItemService itemService) {
         this.itemService = itemService;
-        this.securityService = securityService;
     }
 
     private final ItemService itemService;
-    SecurityService securityService;
     PageGenerator pageGenerator = PageGenerator.instance();
 
 

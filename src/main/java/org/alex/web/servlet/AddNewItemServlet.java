@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.alex.entity.Item;
-import org.alex.entity.ItemDeptType;
+import org.alex.entity.ItemDepartmentType;
 import org.alex.service.ItemService;
 import org.alex.web.util.PageGenerator;
 import org.alex.service.SecurityService;
@@ -17,11 +17,11 @@ public class AddNewItemServlet extends HttpServlet {
     private final ItemService itemService;
 
     PageGenerator pageGenerator = PageGenerator.instance();
-    SecurityService securityService;
 
-    public AddNewItemServlet(ItemService itemService, SecurityService securityService) {
+
+    public AddNewItemServlet(ItemService itemService) {
         this.itemService = itemService;
-        this.securityService = securityService;
+
     }
 
     @Override
@@ -29,7 +29,7 @@ public class AddNewItemServlet extends HttpServlet {
 
             List<Item> items = itemService.findAll();
             HashMap<String, Object> parameters = new HashMap<>();
-            parameters.put("itemDeptTypes", ItemDeptType.values());
+            parameters.put("itemDepartmentTypes", ItemDepartmentType.values());
             parameters.put("items", items);
             String page = pageGenerator.getPage("add_item.html", parameters);
             resp.getWriter().write(page);
@@ -45,7 +45,7 @@ public class AddNewItemServlet extends HttpServlet {
             String successMessage = "THE ITEM HAS BEEN ADDED";
             List<Item> items = itemService.findAll();
             HashMap<String, Object> parameters = new HashMap<>();
-            parameters.put("itemDeptTypes", ItemDeptType.values());
+            parameters.put("itemDepartmentTypes", ItemDepartmentType.values());
             parameters.put("successMessage", successMessage);
             parameters.put("items", items);
             String page = pageGenerator.getPage("add_item.html", parameters);
@@ -54,7 +54,7 @@ public class AddNewItemServlet extends HttpServlet {
             List<Item> items = itemService.findAll();
             String errorMessage = "NOTHING HAVE BEEN ADDED";
             HashMap<String, Object> parameters = new HashMap<>();
-            parameters.put("itemDeptTypes", ItemDeptType.values());
+            parameters.put("itemDepartmentTypes", ItemDepartmentType.values());
             parameters.put("errorMessage", errorMessage);
             parameters.put("items", items);
             String page = pageGenerator.getPage("add_item.html", parameters);
@@ -68,7 +68,7 @@ public class AddNewItemServlet extends HttpServlet {
         return Item.builder()
                 .name(request.getParameter("name"))
                 .price(Integer.parseInt(request.getParameter("price")))
-                .itemDeptType(ItemDeptType.getById(department))
+                .itemDepartmentType(ItemDepartmentType.getById(department))
                 .build();
 
     }

@@ -38,23 +38,13 @@ public class LoginItemServlet extends HttpServlet {
 
         //check if email and password are correct -> db
         try {
-            if (securityService.loginCheck(req)) {
-                String userToken = UUID.randomUUID().toString();
-                System.out.println("User Token: " + userToken);
+            String email = req.getParameter("email");
+            String password = req.getParameter("password");
+            if (securityService.loginCheck(email, password)) {
 
-
-                userTokens.add(userToken);
-                for (String token : userTokens) {
-                    System.out.println(token);
-
-                }
-
-                Cookie cookie = new Cookie("user-token", userToken);
-
+                Cookie cookie = new Cookie("user-token", securityService.generateCookie());
                 resp.addCookie(cookie);
-                resp.addCookie(new Cookie("preferredLang", "ua"));
-
-                resp.sendRedirect("/");
+                resp.sendRedirect("/items");
             } else {
                 String errorMessage = "The email or password is incorrect";
                 HashMap<String, Object> parameters = new HashMap<>();

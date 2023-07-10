@@ -25,7 +25,7 @@ public enum ItemDepartmentType {
                 return itemDepartmentType;
             }
         }
-        throw new IllegalArgumentException("No itemDeptType was found for id: " + id);
+        throw new IllegalArgumentException("No ItemDepartmentType was found for id: " + id);
     }
 
 }

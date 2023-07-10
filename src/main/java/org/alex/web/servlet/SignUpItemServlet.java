@@ -1,6 +1,5 @@
 package org.alex.web.servlet;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,19 +12,15 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 public class SignUpItemServlet extends HttpServlet {
 
     PageGenerator pageGenerator = PageGenerator.instance();
 
-    List<String> userTokens;
     SecurityService securityService;
     UserService userService;
 
-    public SignUpItemServlet(List<String> userTokens, SecurityService securityService, UserService userService) {
-        this.userTokens = userTokens;
+    public SignUpItemServlet(SecurityService securityService, UserService userService) {
         this.securityService = securityService;
         this.userService = userService;
     }
@@ -40,22 +35,30 @@ public class SignUpItemServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            if (securityService.emailDuplicateCheck(req)) {
-                User user = getUsersFromRequest(req);
-                userService.add(user);
-                String userToken = UUID.randomUUID().toString();
-                System.out.println("User Token: " + userToken);
-                userTokens.add(userToken);
-                Cookie cookie = new Cookie("user-token", userToken);
-                resp.addCookie(cookie);
-                resp.addCookie(new Cookie("preferredLang", "ua"));
-                resp.sendRedirect("/");
-            } else {
-                String errorMessage = "The email you entered is already registered";
+            String email = req.getParameter("email");
+            String password = req.getParameter("password");
+            if (!securityService.emailAndPasswordNotNullCheck(email, password)) {
+                String errorMessage = "The email or password cannot be empty";
                 HashMap<String, Object> parameters = new HashMap<>();
                 parameters.put("errorMessage", errorMessage);
                 String page = pageGenerator.getPage("register.html", parameters);
                 resp.getWriter().write(page);
+            } else if (!securityService.emailDuplicateCheck(email)) {
+                String errorMessage = "The email you entered is already registered, please proceed to log in page";
+                HashMap<String, Object> parameters = new HashMap<>();
+                parameters.put("errorMessage", errorMessage);
+                String page = pageGenerator.getPage("register.html", parameters);
+                resp.getWriter().write(page);
+            } else {
+                User user = getUsersFromRequest(req);
+                userService.add(user);
+                String successMessage = "CONGRATULATIONS. YOU'RE NOW REGISTERED. PLEASE LOG IN WITH YOUR USERNAME AND PASSWORD";
+                HashMap<String, Object> parameters = new HashMap<>();
+                parameters.put("successMessage", successMessage);
+                String page = pageGenerator.getPage("login.html", parameters);
+                resp.getWriter().write(page);
+
+
             }
 
         } catch (NoSuchAlgorithmException e) {

@@ -2,7 +2,6 @@ package org.alex.dao.jdbc;
 
 import org.alex.dao.UserDao;
 import org.alex.dao.jdbc.mapper.UserRowMapper;
-import org.alex.entity.Item;
 import org.alex.entity.User;
 
 import java.sql.*;
@@ -33,10 +32,10 @@ public class JdbcUserDao implements UserDao {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Error with the finding all users", e);
         }
-
-        return null;
     }
+
     public void add(User user) {
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(ADD_SQL)) {

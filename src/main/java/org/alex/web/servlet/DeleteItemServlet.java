@@ -15,12 +15,10 @@ import java.util.Map;
 
 public class DeleteItemServlet extends HttpServlet {
     private final ItemService itemService;
-    SecurityService securityService;
     PageGenerator pageGenerator = PageGenerator.instance();
 
-    public DeleteItemServlet(ItemService itemService, SecurityService securityService) {
+    public DeleteItemServlet(ItemService itemService) {
         this.itemService = itemService;
-        this.securityService = securityService;
     }
 
     @Override

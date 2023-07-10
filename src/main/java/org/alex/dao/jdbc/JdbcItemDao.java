@@ -38,9 +38,9 @@ public class JdbcItemDao implements ItemDao {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Error with finding all items");
         }
 
-        return null;
     }
 
     public void add(Item item) {
@@ -48,7 +48,7 @@ public class JdbcItemDao implements ItemDao {
              PreparedStatement preparedStatement = connection.prepareStatement(ADD_SQL)) {
             preparedStatement.setString(1, item.getName());
             preparedStatement.setInt(2, item.getPrice());
-            preparedStatement.setString(3, item.getItemDeptType().getId());
+            preparedStatement.setString(3, item.getItemDepartmentType().getId());
             preparedStatement.setTimestamp(4, Timestamp.valueOf(item.getCreationDate()));
             preparedStatement.executeUpdate();
 

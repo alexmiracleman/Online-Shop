@@ -36,7 +36,7 @@
             <th scope="row">${item.id}</th>
             <td>${item.name}</td>
             <td>$${item.price}</td>
-            <td>${item.itemDeptType.getName()}</td>
+            <td>${item.itemDepartmentType.getName()}</td>
             <td>${item.creationDate}</td>
         </tr>
         </#list>
@@ -50,14 +50,14 @@
 </div>
     <p></p>
         <div class="container" align="center">
-            <a href="/add" class="btn btn-dark" style="width:137px">ADD ITEMS</a>
+            <a href="/items/add" class="btn btn-dark" style="width:137px">ADD ITEMS</a>
 
     <p></p>
 
-        <a href="/update" class="btn btn-dark" style="width:137px">EDIT ITEMS</a>
+        <a href="/items/update" class="btn btn-dark" style="width:137px">EDIT ITEMS</a>
 
     <p></p>
-        <a href="/delete" class="btn btn-dark" style="width:137px">REMOVE ITEMS</a>
+        <a href="/items/delete" class="btn btn-dark" style="width:137px">REMOVE ITEMS</a>
 
 </div>
 <p></p>

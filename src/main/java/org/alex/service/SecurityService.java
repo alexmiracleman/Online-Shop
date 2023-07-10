@@ -1,8 +1,6 @@
 package org.alex.service;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import org.alex.entity.User;
 
 import java.math.BigInteger;
@@ -11,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.UUID;
 
 public class SecurityService extends HttpServlet {
     List<String> userTokens;
@@ -21,38 +20,34 @@ public class SecurityService extends HttpServlet {
         this.userService = userService;
     }
 
-    public boolean cookieCheck(HttpServletRequest req) {
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("user-token")) {
-                    if (userTokens.contains(cookie.getValue())) {
-                        return true;
-                    }
-                    break;
-                }
+    public String generateCookie() {
+        String userToken = UUID.randomUUID().toString();
+        System.out.println("User Token: " + userToken);
+
+        userTokens.add(userToken);
+        for (String token : userTokens) {
+            System.out.println(token);
+        }
+        return userToken;
+    }
+
+    public boolean cookieCheck(String cookieValue) {
+        for (String token : userTokens) {
+            if (userTokens.contains(cookieValue)) {
+                return true;
             }
+            break;
         }
         return false;
     }
 
-    public void cookieRemove(HttpServletRequest req) {
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("user-token")) {
-                    if (userTokens.contains(cookie.getValue())) {
-                        userTokens.remove(cookie.getValue());
-                    }
-                }
+    public boolean cookieRemove(String cookieValue) {
+        return userTokens.remove(cookieValue);
 
-            }
-        }
+
     }
 
-    public boolean loginCheck(HttpServletRequest req) throws NoSuchAlgorithmException, NoSuchProviderException {
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+    public boolean loginCheck(String email, String password) throws NoSuchAlgorithmException, NoSuchProviderException {
         List<User> users = userService.findAll();
         for (User user : users) {
             if (user.getEmail().equals(email)) {
@@ -66,28 +61,26 @@ public class SecurityService extends HttpServlet {
     }
 
     //And
-    public boolean emailDuplicateCheck(HttpServletRequest req) throws NoSuchAlgorithmException, NoSuchProviderException {
-        String email = req.getParameter("email");
+    public boolean emailDuplicateCheck(String email) throws NoSuchAlgorithmException, NoSuchProviderException {
         List<User> users = userService.findAll();
         for (User user : users) {
             if (user.getEmail().equals(email)) {
 
-                    return false;
-                }
+                return false;
             }
+        }
 
         return true;
     }
 
-    public boolean passwordNotNullCheck(HttpServletRequest req) {
-        String password = req.getParameter("password");
-        if (password.isBlank()) {
+    public boolean emailAndPasswordNotNullCheck(String email, String password) {
+        if (password.isBlank() || email.isBlank()) {
             return false;
         }
         return true;
     }
 
-    public String getHashedPassword(String password) throws NoSuchAlgorithmException, NoSuchProviderException {
+    public String getHashedPassword(String password) throws NoSuchAlgorithmException {
 
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] messageDigest = md.digest(password.getBytes());

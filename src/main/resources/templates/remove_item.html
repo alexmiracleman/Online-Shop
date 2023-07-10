@@ -33,7 +33,7 @@
         <th scope="row">${item.id}</th>
         <td>${item.name}</td>
         <td>$${item.price}</td>
-        <td>${item.itemDeptType.getName()}</td>
+        <td>${item.itemDepartmentType.getName()}</td>
         <td>${item.creationDate}</td>
       </tr>
       </#list>
@@ -46,7 +46,7 @@
 
   <div class="container" align="center">
     <p></p>
-    <form action="/delete" method="POST">
+    <form action="/items/delete" method="POST">
       <strong>
         <div class="form-group">
           Select item to remove:
@@ -61,7 +61,7 @@
         <p></p>
       <input type="submit" class="btn btn-dark" style="width:137px" value="SUBMIT">
       <p></p>
-      <a href="/" class="btn btn-dark" style="width:137px">RETURN</a>
+      <a href="/items" class="btn btn-dark" style="width:137px">RETURN</a>
   </form>
 </div>
 
