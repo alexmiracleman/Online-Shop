@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcItemDao implements ItemDao {
+    private final ConnectionFactory connectionFactory;
+
+    public JdbcItemDao(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
     private static final ItemRowMapper ITEM_ROW_MAPPER = new ItemRowMapper();
     private static final String FIND_ALL_SQL = """
             SELECT id, name, price, department, creation_date FROM inventory ORDER BY id;
@@ -25,7 +31,8 @@ public class JdbcItemDao implements ItemDao {
 
     @Override
     public List<Item> findAll() {
-        try (Connection connection = getConnection();
+
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -44,7 +51,7 @@ public class JdbcItemDao implements ItemDao {
     }
 
     public void add(Item item) {
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(ADD_SQL)) {
             preparedStatement.setString(1, item.getName());
             preparedStatement.setInt(2, item.getPrice());
@@ -59,7 +66,7 @@ public class JdbcItemDao implements ItemDao {
     }
 
     public void delete(Item item) {
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
             preparedStatement.setString(1, item.getName());
             preparedStatement.executeUpdate();
@@ -71,7 +78,7 @@ public class JdbcItemDao implements ItemDao {
     }
 
     public void update(Item item) {
-        try (Connection connection = getConnection();
+        try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setInt(1, item.getPrice());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(item.getCreationDate()));
@@ -84,7 +91,4 @@ public class JdbcItemDao implements ItemDao {
         }
     }
 
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/onlinestore", "postgres", "Alex123!");
-    }
 }

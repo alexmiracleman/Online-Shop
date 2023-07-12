@@ -23,25 +23,31 @@ public class SecurityFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String requestURI = httpServletRequest.getRequestURI();
+        for (String openPath : openPaths) {
+            if (requestURI.startsWith(openPath)) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+        }
+        if (securityService.cookieCheck(cookieValue(httpServletRequest))) {
+            filterChain.doFilter(servletRequest, servletResponse);
+        } else {
+            httpServletResponse.sendRedirect("/login");
+        }
+
+    }
+    private String cookieValue(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("user-token")) {
                     String cookieValue = cookie.getValue();
-
-                    for (String openPath : openPaths) {
-                        if (requestURI.startsWith(openPath)) {
-                            filterChain.doFilter(servletRequest, servletResponse);
-                            return;
-                        }
-                    }
-                    if (securityService.cookieCheck(cookieValue)) {
-                        filterChain.doFilter(servletRequest, servletResponse);
-                    } else {
-                        httpServletResponse.sendRedirect("/login");
-                    }
+                    return cookieValue;
                 }
             }
         }
+        return null;
+
     }
+
 }

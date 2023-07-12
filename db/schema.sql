@@ -13,3 +13,10 @@ CREATE TABLE users
    email             VARCHAR(50)  NOT NULL UNIQUE,
    password          VARCHAR(50)       NOT NULL
 );
+
+CREATE TABLE salts
+(
+   id               SERIAL PRIMARY KEY,
+   email             VARCHAR(50)  NOT NULL UNIQUE,
+   pass_salt         VARCHAR(50)       NOT NULL
+);

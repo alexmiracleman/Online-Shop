@@ -1,6 +1,6 @@
 package org.alex.service;
 
-import jakarta.servlet.http.HttpServlet;
+import org.alex.entity.Salt;
 import org.alex.entity.User;
 
 import java.math.BigInteger;
@@ -11,29 +11,32 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 
-public class SecurityService extends HttpServlet {
-    List<String> userTokens;
-    UserService userService;
+public class SecurityService {
+    private List<String> userTokens;
+    private UserService userService;
+    private SaltService saltService;
 
-    public SecurityService(List<String> userTokens, UserService userService) {
+    public SecurityService(List<String> userTokens, UserService userService, SaltService saltService) {
         this.userTokens = userTokens;
         this.userService = userService;
+        this.saltService = saltService;
     }
 
-    public String generateCookie() {
+    public String generateToken() {
         String userToken = UUID.randomUUID().toString();
         System.out.println("User Token: " + userToken);
-
-        userTokens.add(userToken);
-        for (String token : userTokens) {
-            System.out.println(token);
-        }
         return userToken;
     }
+    public String getCookieValue() {
+        String token = generateToken();
+        userTokens.add(token);
+        return token;
+    }
+
 
     public boolean cookieCheck(String cookieValue) {
         for (String token : userTokens) {
-            if (userTokens.contains(cookieValue)) {
+            if (token.contains(cookieValue)) {
                 return true;
             }
             break;
@@ -49,9 +52,10 @@ public class SecurityService extends HttpServlet {
 
     public boolean loginCheck(String email, String password) throws NoSuchAlgorithmException, NoSuchProviderException {
         List<User> users = userService.findAll();
+
         for (User user : users) {
             if (user.getEmail().equals(email)) {
-                if (user.getPassword().equals(getHashedPassword(password))) {
+                if (user.getPassword().equals(getHashedPassword(password) + getSalt(email)) ) {
                     return true;
                 }
                 break;
@@ -60,7 +64,6 @@ public class SecurityService extends HttpServlet {
         return false;
     }
 
-    //And
     public boolean emailDuplicateCheck(String email) throws NoSuchAlgorithmException, NoSuchProviderException {
         List<User> users = userService.findAll();
         for (User user : users) {
@@ -91,11 +94,24 @@ public class SecurityService extends HttpServlet {
 
     }
 
-    private static String getSalt() throws NoSuchAlgorithmException, NoSuchProviderException {
+
+
+    public String generateSalt() throws NoSuchAlgorithmException, NoSuchProviderException {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
-        return salt.toString();
+        byte[] rawSalt = new byte[16];
+        sr.nextBytes(rawSalt);
+        String salt = rawSalt.toString();
+        return salt;
+
+    }
+    public String getSalt(String email) {
+        List<Salt> salts = saltService.findAll();
+        for (Salt salt : salts) {
+            if (salt.getEmail().equals(email)) {
+                return salt.getPassSalt();
+            }
+        }
+        return null;
     }
 
 

@@ -3,7 +3,9 @@ package org.alex.web.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.alex.entity.Salt;
 import org.alex.entity.User;
+import org.alex.service.SaltService;
 import org.alex.service.SecurityService;
 import org.alex.service.UserService;
 import org.alex.web.util.PageGenerator;
@@ -19,10 +21,12 @@ public class SignUpItemServlet extends HttpServlet {
 
     SecurityService securityService;
     UserService userService;
+    SaltService saltService;
 
-    public SignUpItemServlet(SecurityService securityService, UserService userService) {
+    public SignUpItemServlet(SecurityService securityService, UserService userService, SaltService saltService) {
         this.securityService = securityService;
         this.userService = userService;
+        this.saltService = saltService;
     }
 
     @Override
@@ -50,9 +54,12 @@ public class SignUpItemServlet extends HttpServlet {
                 String page = pageGenerator.getPage("register.html", parameters);
                 resp.getWriter().write(page);
             } else {
+                Salt salt = getSaltFromRequest(req);
+                saltService.add(salt);
                 User user = getUsersFromRequest(req);
                 userService.add(user);
-                String successMessage = "CONGRATULATIONS. YOU'RE NOW REGISTERED. PLEASE LOG IN WITH YOUR USERNAME AND PASSWORD";
+
+                String successMessage = "CONGRATULATIONS. YOU'RE NOW REGISTERED. PLEASE LOG IN WITH YOUR EMAIL AND PASSWORD";
                 HashMap<String, Object> parameters = new HashMap<>();
                 parameters.put("successMessage", successMessage);
                 String page = pageGenerator.getPage("login.html", parameters);
@@ -69,12 +76,21 @@ public class SignUpItemServlet extends HttpServlet {
 
     }
 
+    Salt getSaltFromRequest(HttpServletRequest request) throws NoSuchAlgorithmException, NoSuchProviderException {
+        return Salt.builder()
+                .email(request.getParameter("email"))
+                .passSalt(securityService.generateSalt())
+                .build();
+    }
     User getUsersFromRequest(HttpServletRequest request) throws NoSuchAlgorithmException, NoSuchProviderException {
+
         return User.builder()
                 .email(request.getParameter("email"))
-                .password(securityService.getHashedPassword(request.getParameter("password")))
+                .password(securityService.getHashedPassword(request.getParameter("password")) + securityService.getSalt(request.getParameter("email")))
                 .build();
 
     }
+
+
 
 }

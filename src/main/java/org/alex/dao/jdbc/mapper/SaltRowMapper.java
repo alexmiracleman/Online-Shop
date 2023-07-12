@@ -1,22 +1,22 @@
 package org.alex.dao.jdbc.mapper;
 
-import org.alex.entity.User;
+import org.alex.entity.Salt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class UserRowMapper {
-    public User mapRow(ResultSet resultSet) throws SQLException {
+public class SaltRowMapper {
+    public Salt saltRow(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
         String email = resultSet.getString("email");
-        String password = resultSet.getString("password");
-        User user = User.builder().
+        String passSalt = resultSet.getString("pass_salt");
+        Salt salt = Salt.builder().
                 id(id)
                 .email(email)
-                .password(password)
+                .passSalt(passSalt)
                 .build();
 
-        return user;
+        return salt;
 
 
     }

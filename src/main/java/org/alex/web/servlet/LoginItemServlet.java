@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.alex.service.UserService;
 import org.alex.web.util.PageGenerator;
 import org.alex.service.SecurityService;
 
@@ -42,7 +41,7 @@ public class LoginItemServlet extends HttpServlet {
             String password = req.getParameter("password");
             if (securityService.loginCheck(email, password)) {
 
-                Cookie cookie = new Cookie("user-token", securityService.generateCookie());
+                Cookie cookie = new Cookie("user-token", securityService.getCookieValue());
                 resp.addCookie(cookie);
                 resp.sendRedirect("/items");
             } else {
