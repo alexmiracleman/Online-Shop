@@ -1,78 +1,108 @@
 package org.alex.service;
 
-import org.alex.entity.Salt;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.alex.entity.Credentials;
 import org.alex.entity.User;
+import org.alex.util.PasswordUtils;
+import org.alex.web.util.Session;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class SecurityService {
-    private List<String> userTokens;
+    private List<Session> sessionList = Collections.synchronizedList(new ArrayList<>());
     private UserService userService;
-    private SaltService saltService;
+    private PasswordUtils passwordUtils;
+    private int sessionTimeToLive;
 
-    public SecurityService(List<String> userTokens, UserService userService, SaltService saltService) {
-        this.userTokens = userTokens;
+    public SecurityService(UserService userService, List<Session> sessionList) {
         this.userService = userService;
-        this.saltService = saltService;
+        this.sessionList = sessionList;
     }
 
     public String generateToken() {
         String userToken = UUID.randomUUID().toString();
-        System.out.println("User Token: " + userToken);
         return userToken;
     }
-    public String getCookieValue() {
-        String token = generateToken();
-        userTokens.add(token);
-        return token;
-    }
 
-
-    public boolean cookieCheck(String cookieValue) {
-        for (String token : userTokens) {
-            if (token.contains(cookieValue)) {
-                return true;
-            }
-            break;
+    public Session authenticate(Credentials credentials) throws NoSuchAlgorithmException, NoSuchProviderException {
+        User user = isAuth(credentials.getEmail(), credentials.getPassword());
+        if (user != null) {
+            String token = generateToken();
+            LocalDateTime expireDate = LocalDateTime.now().plusMinutes(sessionTimeToLive);
+            Session session = Session.builder()
+                    .token(token)
+                    .expireDate(expireDate)
+                    .userType(user.getUserType())
+                    .cart(new ArrayList<>())
+                    .build();
+            sessionList.add(session);
+            return session;
+        } else {
+            return null;
         }
-        return false;
     }
 
-    public boolean cookieRemove(String cookieValue) {
-        return userTokens.remove(cookieValue);
-
-
+    public Session getSession(String token) {
+        for (Session session : sessionList) {
+            if (session.getToken().equals(token)) {
+                if (session == null) {
+                    return null;
+                }
+                if (session.getExpireDate().isAfter(LocalDateTime.now())) {
+                    return session;
+                }
+                if (session.getExpireDate().isBefore(LocalDateTime.now())) {
+                    sessionList.remove(session);
+                    return null;
+                }
+                return session;
+            }
+        }
+        return null;
     }
 
-    public boolean loginCheck(String email, String password) throws NoSuchAlgorithmException, NoSuchProviderException {
+    public void logout(String tokenToRemove) {
+        for (Session session : sessionList) {
+            if (session.getToken().equals(tokenToRemove)) {
+                sessionList.remove(session);
+                break;
+            }
+        }
+    }
+
+    public User isAuth(String email, String password) throws NoSuchAlgorithmException {
         List<User> users = userService.findAll();
-
         for (User user : users) {
             if (user.getEmail().equals(email)) {
-                if (user.getPassword().equals(getHashedPassword(password) + getSalt(email)) ) {
-                    return true;
+                if (user.getPassword().equals(passwordUtils.generateHash(password, user.getSalt()))) {
+                    return user;
                 }
                 break;
             }
         }
-        return false;
+        return null;
     }
 
-    public boolean emailDuplicateCheck(String email) throws NoSuchAlgorithmException, NoSuchProviderException {
+    public boolean emailDuplicateCheck(String email) {
         List<User> users = userService.findAll();
         for (User user : users) {
             if (user.getEmail().equals(email)) {
-
                 return false;
             }
         }
-
         return true;
     }
 
@@ -82,37 +112,5 @@ public class SecurityService {
         }
         return true;
     }
-
-    public String getHashedPassword(String password) throws NoSuchAlgorithmException {
-
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] messageDigest = md.digest(password.getBytes());
-        BigInteger bigInteger = new BigInteger(1, messageDigest);
-        String generatedPassword = bigInteger.toString(16);
-        System.out.println(generatedPassword);
-        return generatedPassword;
-
-    }
-
-
-
-    public String generateSalt() throws NoSuchAlgorithmException, NoSuchProviderException {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
-        byte[] rawSalt = new byte[16];
-        sr.nextBytes(rawSalt);
-        String salt = rawSalt.toString();
-        return salt;
-
-    }
-    public String getSalt(String email) {
-        List<Salt> salts = saltService.findAll();
-        for (Salt salt : salts) {
-            if (salt.getEmail().equals(email)) {
-                return salt.getPassSalt();
-            }
-        }
-        return null;
-    }
-
-
 }
+

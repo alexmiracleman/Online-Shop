@@ -14,7 +14,7 @@ CREATE TABLE users
    password          VARCHAR(50)       NOT NULL
 );
 
-CREATE TABLE salts
+CREATE TABLE credentials
 (
    id               SERIAL PRIMARY KEY,
    email             VARCHAR(50)  NOT NULL UNIQUE,

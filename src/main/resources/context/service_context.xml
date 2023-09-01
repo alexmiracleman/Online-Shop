@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans>
+
+    <bean id="securityService" class="org.alex.service.SecurityService">
+        <property name="userService" ref="userService"/>
+        <property name="passwordUtils" ref="passwordUtils"/>
+        <property name="sessionTimeToLive" value="20"/>
+    </bean>
+
+    <bean id="itemService" class="org.alex.service.ItemService">
+        <property name="itemDao" ref="itemDao"/>
+    </bean>
+
+    <bean id="userService" class="org.alex.service.UserService">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+</beans>

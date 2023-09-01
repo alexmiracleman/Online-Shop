@@ -1,4 +1,4 @@
-package org.alex.dao;
+package org.alex.dao.jdbc.mapper;
 
 import org.alex.dao.jdbc.mapper.ItemRowMapper;
 import org.alex.entity.Item;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans>
+
+    <bean id="connectionFactory" class="org.alex.dao.jdbc.ConnectionFactory">
+        <property name="url" value="jdbc:postgresql://localhost:5432/onlinestore"/>
+        <property name="username" value="postgres"/>
+        <property name="password" value="Alex123!"/>
+    </bean>
+
+    <bean id="userDao" class="org.alex.dao.jdbc.JdbcUserDao">
+        <property name="connectionFactory" ref="connectionFactory"/>
+    </bean>
+
+    <bean id="itemDao" class="org.alex.dao.jdbc.JdbcItemDao">
+        <property name="connectionFactory" ref="connectionFactory"/>
+    </bean>
+</beans>

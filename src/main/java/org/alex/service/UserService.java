@@ -1,17 +1,19 @@
 package org.alex.service;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.dao.UserDao;
 import org.alex.entity.User;
+
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserService {
 
-    private final UserDao userDao;
-
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
+    private UserDao userDao;
 
     public List<User> findAll() {
         List<User> users = userDao.findAll();
@@ -19,11 +21,10 @@ public class UserService {
         return users;
 
     }
+
     public void add(User user) {
         userDao.add(user);
     }
-
-
 
 
 }

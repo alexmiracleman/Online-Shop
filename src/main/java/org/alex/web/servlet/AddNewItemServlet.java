@@ -3,38 +3,33 @@ package org.alex.web.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.entity.Item;
 import org.alex.entity.ItemDepartmentType;
 import org.alex.service.ItemService;
 import org.alex.web.util.PageGenerator;
-import org.alex.service.SecurityService;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class AddNewItemServlet extends HttpServlet {
-    private final ItemService itemService;
-
-    PageGenerator pageGenerator = PageGenerator.instance();
-
-
-    public AddNewItemServlet(ItemService itemService) {
-        this.itemService = itemService;
-
-    }
+    private ItemService itemService;
+    private PageGenerator pageGenerator = PageGenerator.instance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-            List<Item> items = itemService.findAll();
-            HashMap<String, Object> parameters = new HashMap<>();
-            parameters.put("itemDepartmentTypes", ItemDepartmentType.values());
-            parameters.put("items", items);
-            String page = pageGenerator.getPage("add_item.html", parameters);
-            resp.getWriter().write(page);
-
-
+        List<Item> items = itemService.findAll();
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("itemDepartmentTypes", ItemDepartmentType.values());
+        parameters.put("items", items);
+        String page = pageGenerator.getPage("add_item.html", parameters);
+        resp.getWriter().write(page);
     }
 
     @Override
@@ -59,7 +54,6 @@ public class AddNewItemServlet extends HttpServlet {
             parameters.put("items", items);
             String page = pageGenerator.getPage("add_item.html", parameters);
             resp.getWriter().write(page);
-
         }
     }
 
@@ -70,6 +64,5 @@ public class AddNewItemServlet extends HttpServlet {
                 .price(Integer.parseInt(request.getParameter("price")))
                 .itemDepartmentType(ItemDepartmentType.getById(department))
                 .build();
-
     }
 }

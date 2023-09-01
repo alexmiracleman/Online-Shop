@@ -21,9 +21,6 @@ public class ItemRowMapper {
                 .itemDepartmentType(ItemDepartmentType.getById(itemDepartmentTypeId))
                 .creationDate(creationDate.toLocalDateTime())
                 .build();
-
         return item;
-
-
     }
 }

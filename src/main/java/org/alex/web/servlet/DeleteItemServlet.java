@@ -3,23 +3,23 @@ package org.alex.web.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.entity.Item;
 import org.alex.service.ItemService;
 import org.alex.web.util.PageGenerator;
-import org.alex.service.SecurityService;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class DeleteItemServlet extends HttpServlet {
-    private final ItemService itemService;
-    PageGenerator pageGenerator = PageGenerator.instance();
-
-    public DeleteItemServlet(ItemService itemService) {
-        this.itemService = itemService;
-    }
+    private ItemService itemService;
+    private PageGenerator pageGenerator = PageGenerator.instance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -50,7 +50,6 @@ public class DeleteItemServlet extends HttpServlet {
             parameters.put("items", items);
             String page = pageGenerator.getPage("remove_item.html", parameters);
             resp.getWriter().write(page);
-
         }
     }
 
@@ -58,6 +57,5 @@ public class DeleteItemServlet extends HttpServlet {
         return Item.builder()
                 .name(request.getParameter("name"))
                 .build();
-
     }
 }

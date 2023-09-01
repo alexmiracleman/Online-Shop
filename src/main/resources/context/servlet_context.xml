@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans>
+
+    <bean id="addItemToCartServlet " class="org.alex.web.servlet.AddItemToCartServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="addNewItemServlet" class="org.alex.web.servlet.AddNewItemServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="cartServlet" class="org.alex.web.servlet.CartServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="deleteItemServlet" class="org.alex.web.servlet.DeleteItemServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="loginServlet" class="org.alex.web.servlet.LoginServlet">
+        <property name="securityService" ref="securityService"/>
+    </bean>
+
+    <bean id="logoutServlet" class="org.alex.web.servlet.LogoutServlet">
+        <property name="securityService" ref="securityService"/>
+    </bean>
+
+    <bean id="removeItemFromCartServlet" class="org.alex.web.servlet.RemoveItemFromCartServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="showAllItemsRequestServlet" class="org.alex.web.servlet.ShowAllItemsRequestServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="showAllUserItemsRequestServlet" class="org.alex.web.servlet.ShowAllUserItemsRequestServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+    <bean id="signUpServlet" class="org.alex.web.servlet.SignUpServlet">
+        <property name="securityService" ref="securityService"/>
+        <property name="passwordUtils" ref="passwordUtils"/>
+        <property name="userService" ref="userService"/>
+    </bean>
+
+    <bean id="updateItemServlet" class="org.alex.web.servlet.UpdateItemServlet">
+        <property name="itemService" ref="itemService"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans>
+    <import resource="/context/jdbc_dao_context.xml"/>
+    <import resource="/context/service_context.xml"/>
+    <import resource="/context/servlet_context.xml"/>
+
+    <bean id="securityFilter" class="org.alex.web.filter.SecurityFilter">
+        <property name="securityService" ref="securityService"/>
+        <property name="sessionTimeToLive" value="20"/>
+    </bean>
+
+    <bean id="passwordUtils" class="org.alex.util.PasswordUtils">
+    </bean>
+
+</beans>

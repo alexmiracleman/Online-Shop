@@ -9,14 +9,15 @@ import lombok.Setter;
 import org.alex.entity.Item;
 import org.alex.service.ItemService;
 import org.alex.web.util.PageGenerator;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor
-@Setter
 @Getter
-public class ShowAllItemsRequestServlet extends HttpServlet {
+@Setter
+@NoArgsConstructor
+public class ShowAllUserItemsRequestServlet extends HttpServlet {
     private ItemService itemService;
 
     @Override
@@ -24,7 +25,7 @@ public class ShowAllItemsRequestServlet extends HttpServlet {
         List<Item> items = itemService.findAll();
         PageGenerator pageGenerator = PageGenerator.instance();
         Map<String, Object> parameters = Map.of("items", items);
-        String page = pageGenerator.getPage("items_list.html", parameters);
+        String page = pageGenerator.getPage("user_items_list.html", parameters);
         resp.getWriter().write(page);
     }
 }

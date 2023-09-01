@@ -3,36 +3,34 @@ package org.alex.web.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.alex.entity.Salt;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.entity.User;
-import org.alex.service.SaltService;
 import org.alex.service.SecurityService;
 import org.alex.service.UserService;
+import org.alex.util.PasswordUtils;
 import org.alex.web.util.PageGenerator;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.HashMap;
+import java.util.Map;
 
-public class SignUpItemServlet extends HttpServlet {
+@Getter
+@Setter
+@NoArgsConstructor
+public class SignUpServlet extends HttpServlet {
 
-    PageGenerator pageGenerator = PageGenerator.instance();
-
-    SecurityService securityService;
-    UserService userService;
-    SaltService saltService;
-
-    public SignUpItemServlet(SecurityService securityService, UserService userService, SaltService saltService) {
-        this.securityService = securityService;
-        this.userService = userService;
-        this.saltService = saltService;
-    }
+    private PageGenerator pageGenerator = PageGenerator.instance();
+    private PasswordUtils passwordUtils;
+    private SecurityService securityService;
+    private UserService userService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HashMap<String, Object> parameters = new HashMap<>();
-        String page = pageGenerator.getPage("register.html", parameters);
+        String page = pageGenerator.getPage("register.html", Map.of());
         resp.getWriter().write(page);
     }
 
@@ -54,43 +52,28 @@ public class SignUpItemServlet extends HttpServlet {
                 String page = pageGenerator.getPage("register.html", parameters);
                 resp.getWriter().write(page);
             } else {
-                Salt salt = getSaltFromRequest(req);
-                saltService.add(salt);
                 User user = getUsersFromRequest(req);
                 userService.add(user);
-
                 String successMessage = "CONGRATULATIONS. YOU'RE NOW REGISTERED. PLEASE LOG IN WITH YOUR EMAIL AND PASSWORD";
                 HashMap<String, Object> parameters = new HashMap<>();
                 parameters.put("successMessage", successMessage);
                 String page = pageGenerator.getPage("login.html", parameters);
                 resp.getWriter().write(page);
-
-
             }
-
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    Salt getSaltFromRequest(HttpServletRequest request) throws NoSuchAlgorithmException, NoSuchProviderException {
-        return Salt.builder()
-                .email(request.getParameter("email"))
-                .passSalt(securityService.generateSalt())
-                .build();
-    }
     User getUsersFromRequest(HttpServletRequest request) throws NoSuchAlgorithmException, NoSuchProviderException {
-
+        String salt = passwordUtils.generateSalt();
         return User.builder()
                 .email(request.getParameter("email"))
-                .password(securityService.getHashedPassword(request.getParameter("password")) + securityService.getSalt(request.getParameter("email")))
+                .salt(salt)
+                .password(passwordUtils.generateHash(request.getParameter("password"), salt))
+                .userType("USER")
                 .build();
-
     }
-
-
-
 }

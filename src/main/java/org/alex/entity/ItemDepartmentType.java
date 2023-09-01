@@ -15,7 +15,6 @@ public enum ItemDepartmentType {
     COSMETICS("Cosmetics", "Cosmetics"),
     FURNITURE("Furniture", "Furniture");
 
-
     private final String id;
     private final String name;
 

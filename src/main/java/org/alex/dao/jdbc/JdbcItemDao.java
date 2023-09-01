@@ -1,5 +1,8 @@
 package org.alex.dao.jdbc;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.dao.ItemDao;
 import org.alex.dao.jdbc.mapper.ItemRowMapper;
 import org.alex.entity.Item;
@@ -8,12 +11,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class JdbcItemDao implements ItemDao {
-    private final ConnectionFactory connectionFactory;
-
-    public JdbcItemDao(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
+    private ConnectionFactory connectionFactory;
 
     private static final ItemRowMapper ITEM_ROW_MAPPER = new ItemRowMapper();
     private static final String FIND_ALL_SQL = """
@@ -35,19 +37,16 @@ public class JdbcItemDao implements ItemDao {
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL);
              ResultSet resultSet = preparedStatement.executeQuery()) {
-
             List<Item> items = new ArrayList<>();
             while (resultSet.next()) {
                 Item item = ITEM_ROW_MAPPER.mapRow(resultSet);
                 items.add(item);
             }
             return items;
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Error with finding all items");
         }
-
     }
 
     public void add(Item item) {
@@ -58,7 +57,6 @@ public class JdbcItemDao implements ItemDao {
             preparedStatement.setString(3, item.getItemDepartmentType().getId());
             preparedStatement.setTimestamp(4, Timestamp.valueOf(item.getCreationDate()));
             preparedStatement.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Error with the item insertion", e);
@@ -70,7 +68,6 @@ public class JdbcItemDao implements ItemDao {
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
             preparedStatement.setString(1, item.getName());
             preparedStatement.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Error with the item removal", e);
@@ -84,11 +81,9 @@ public class JdbcItemDao implements ItemDao {
             preparedStatement.setTimestamp(2, Timestamp.valueOf(item.getCreationDate()));
             preparedStatement.setString(3, item.getName());
             preparedStatement.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Error with the item update", e);
         }
     }
-
 }

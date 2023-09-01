@@ -4,20 +4,18 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.service.SecurityService;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class LogoutServlet extends HttpServlet {
-    SecurityService securityService;
-
-    public LogoutServlet(SecurityService securityService) {
-        this.securityService = securityService;
-    }
+    private SecurityService securityService;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -25,11 +23,15 @@ public class LogoutServlet extends HttpServlet {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("user-token")) {
-                    String cookieValue = cookie.getValue();
-                    securityService.cookieRemove(cookieValue);
+                    String token = cookie.getValue();
+                    securityService.logout(token);
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
                     response.sendRedirect("/login");
                 }
             }
         }
+        response.sendRedirect("/login");
     }
 }

@@ -4,19 +4,24 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.alex.service.SecurityService;
+import org.alex.web.util.Session;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class SecurityFilter implements Filter {
 
     private SecurityService securityService;
     private List<String> openPaths = List.of("/login", "/logout", "/register");
-
-    public SecurityFilter(SecurityService securityService) {
-        this.securityService = securityService;
-    }
+    private int sessionTimeToLive;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -29,13 +34,38 @@ public class SecurityFilter implements Filter {
                 return;
             }
         }
-        if (securityService.cookieCheck(cookieValue(httpServletRequest))) {
-            filterChain.doFilter(servletRequest, servletResponse);
-        } else {
+        String actualToken = cookieValue(httpServletRequest);
+        if (actualToken == null) {
             httpServletResponse.sendRedirect("/login");
         }
-
+        Session session = securityService.getSession(actualToken);
+        httpServletRequest.setAttribute("session", session);
+        if (session == null) {
+            httpServletResponse.sendRedirect("/login");
+            return;
+        }
+        session.setExpireDate(LocalDateTime.now().plusMinutes(sessionTimeToLive));
+        if (session.getUserType().equals("ADMIN")) {
+            if (requestURI.startsWith("/admin/")) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+            if (!requestURI.startsWith("/admin/")) {
+                httpServletResponse.sendRedirect("/admin/items");
+                return;
+            }
+        }
+        if (session.getUserType().equals("USER")) {
+            if (requestURI.startsWith("/user/")) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+            if (!requestURI.startsWith("/user/")) {
+                httpServletResponse.sendRedirect("/user/items");
+            }
+        }
     }
+
     private String cookieValue(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies != null) {
@@ -47,7 +77,5 @@ public class SecurityFilter implements Filter {
             }
         }
         return null;
-
     }
-
 }
