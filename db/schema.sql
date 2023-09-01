@@ -11,12 +11,7 @@ CREATE TABLE users
 (
    id               SERIAL PRIMARY KEY,
    email             VARCHAR(50)  NOT NULL UNIQUE,
-   password          VARCHAR(50)       NOT NULL
-);
-
-CREATE TABLE credentials
-(
-   id               SERIAL PRIMARY KEY,
-   email             VARCHAR(50)  NOT NULL UNIQUE,
-   pass_salt         VARCHAR(50)       NOT NULL
+   password          VARCHAR(50)       NOT NULL,
+   salt             VARCHAR(50)         NOT NULL,
+   user_type        VARCHAR(50)
 );
